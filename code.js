@@ -187,8 +187,9 @@ function spawnCoin() {
 
 function updateMario() {
   updateMarioY();
-  updateMarioX();
+  if (mario.cstate !== CSTATE.RIGID) updateMarioX();
   setPosition("mario",mario.x,mario.y);
+  if (mario.cstate === CSTATE.RIGID) return;
   if (ticks % 10 === 0) updateMarioVisibility();
   if (ticks % 10 === 0) updateMarioSprite();
 }
@@ -196,17 +197,7 @@ function updateMario() {
 function updateMarioY() {
   mario.vy += mario.ay;
   mario.y += mario.vy;
-
-  if (mario.cstate === CSTATE.RIGID) {
-    if (mario.y >= 450 && curtain == 1) {
-      mario.ay = 0;
-      mario.vy = 0;
-      showElement("curtain");
-      narrowScreen();
-    }
-    return;
-  }
-  
+  if (mario.cstate === CSTATE.RIGID) return;
   if (mario.y >= 415-48) {
     mario.vstate = VSTATE.REST;
     mario.vy = 0;
@@ -215,7 +206,6 @@ function updateMarioY() {
 }
 
 function updateMarioX() {
-  if (mario.cstate === CSTATE.RIGID) return;
   if (mario.hstate === HSTATE.WALK_RIGHT) {
     mario.x += 3;
   } else if (mario.hstate === HSTATE.WALK_LEFT) {
@@ -238,8 +228,6 @@ function updateMarioVisibility() {
 }
 
 function updateMarioSprite() {
-  
-  if (mario.cstate === CSTATE.RIGID) return;
   
   if (mario.hstate === HSTATE.REST_RIGHT) {
     setImageURL("mario","assets/right.png");
@@ -311,14 +299,30 @@ function endGame() {
   highScore = Math.max(score, highScore);
   setImageURL("mario","assets/deathA.png");
   mario.cstate = CSTATE.RIGID;
+  mario.hstate = HSTATE.REST_RIGHT;
   mario.vy = 0;
   mario.ay = 0;
   setTimeout(function() {
     mario.ay = 0.10;
     mario.vy = -5;
+    descendMario();
   }, MS_PER_TICK * 75);
 }
 
+// Recursive
+function descendMario() {
+  if (mario.y >= 450) {
+    mario.ay = 0;
+    mario.vy = 0;
+    showElement("curtain");
+    narrowScreen();
+    return;
+  }
+  updateMario();
+  setTimeout(function() {descendMario()}, MS_PER_TICK);
+}
+
+// Recursive
 function narrowScreen() {
   if (curtain >= 450) {
     showScoring();
@@ -331,6 +335,7 @@ function narrowScreen() {
 
 function showScoring() {
   setScreen("lose");
+  showElement("loseTitle");
   hideElement("curtain");
   
   setTimeout(function() {
@@ -342,6 +347,7 @@ function showScoring() {
   }, MS_PER_TICK * 325);
 }
 
+// Recursive
 function incrementScoring() {
   if (scoring === score && highScoring === highScore) {
     showElement("scoringSubtitle");
@@ -358,7 +364,10 @@ function incrementScoring() {
   setTimeout(function(){incrementScoring()}, MS_PER_TICK);
 }
 
+// Recursive
 function tick() {
+  
+  if (mario.cstate === CSTATE.RIGID) return;
   
   setTimeout(function() {
     ticks++;
@@ -366,8 +375,6 @@ function tick() {
   }, MS_PER_TICK);
   
   updateMario();
-  
-  if (mario.cstate === CSTATE.RIGID) return;
   
   if (ticks % 40 === 0) spawnCoin();
   updateCoins();
