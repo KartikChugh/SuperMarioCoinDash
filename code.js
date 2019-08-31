@@ -164,7 +164,7 @@ function performCoinsDespawn() {
 }
 
 function spawnCoin() {
-  var spawnC = new Coin(randomNumber(0,290),-30);
+  var spawnC = new Coin(randomNumber(15,275),-30);
   var spawnId = 0;
   for (var i in COIN_IDS) {
     var COIN_ID = COIN_IDS[i];
@@ -211,6 +211,8 @@ function updateMarioX() {
   } else if (mario.hstate === HSTATE.WALK_LEFT) {
     mario.x -= 3;
   }
+  if (mario.x > 310) mario.x = -30;
+  if (mario.x < -30) mario.x = 310;
 }
 
 function updateMarioVisibility() {
