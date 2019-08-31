@@ -8,7 +8,6 @@ var HSTATE = {REST_RIGHT:0, REST_LEFT:1, WALK_RIGHT:2, WALK_LEFT:3};
 var COIN_IDS = [0,1,2,3,4];
 var HAZARD_IDS = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
 
-
 var mario;
 var coins, hazards, coins_despawn, hazards_despawn;
 var ticks, score, lives;
@@ -20,7 +19,7 @@ var scoring, highScoring;
 // UTILITY
 
 function isColliding(elem, width, height) {
-  var rect1 = {x:mario.x, y:mario.y, width:40, height:36};
+  var rect1 = {x:mario.x, y:mario.y, width:32, height:32};
   var rect2 = {x:getXPosition(elem), y:getYPosition(elem), width:width, height:height};
   
   if (rect1.x < rect2.x + rect2.width &&
