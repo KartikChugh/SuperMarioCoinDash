@@ -298,6 +298,7 @@ function startGame() {
 
 function endGame() {
   stopSound("assets/overworld.mp3");
+  playSound("assets/death.mp3");
   highScore = Math.max(score, highScore);
   setImageURL("mario","assets/deathA.png");
   mario.cstate = CSTATE.RIGID;
@@ -362,7 +363,7 @@ function incrementScoring() {
   var highScoringDelta = highScore/50;
   highScoring = Math.min(highScoring+highScoringDelta, highScore);
   setText("highScore", formatScore(highScoring));
-  
+  playSound("assets/coin.mp3"); 
   setTimeout(function(){incrementScoring()}, MS_PER_TICK);
 }
 
@@ -398,8 +399,6 @@ function tick() {
 onEvent("game", "keydown", function(event) {
   
   if (mario.cstate === CSTATE.RIGID) return;
-  
-  if (event.keyCode === 13) endGame(); // remove
   
   // JUMP: only if at vertical rest
   if (event.keyCode === KEY.SPACE && mario.vstate === VSTATE.REST) {
