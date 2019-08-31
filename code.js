@@ -49,9 +49,36 @@ function updateLives(delta) {
 
 // HAZARD
 
+function Hazard(x, y) {
+  this.x = x;
+  this.y = y;
+  this.vy = 3;
+  this.getStr = function() {
+    return "hazard" + this.id;
+  };
+}
+
+function updateHazards() {
+  hazards_despawn = [];
+  for (var i in hazards) {
+    var h = hazards[i];
+    updateHazardY(h);
+    updateHazardStatus(i, h);
+  }
+  performHazardsDespawn();  
+}
+
 function updateHazardY(h) {
   h.y += h.vy;
   setPosition(h.getStr(),h.x,h.y);
+}
+
+function updateHazardStatus(i, h) {
+  if (h.y >= 440) scheduleHazardDespawn(i, h);
+  else if (isColliding(h.getStr(), 32, 32) && mario.invincibility === -1) {
+    updateLives(-1);
+    scheduleHazardDespawn(i, h);
+  }
 }
 
 function scheduleHazardDespawn(i, h) {
@@ -66,24 +93,6 @@ function performHazardsDespawn() {
     hazards.splice(hazardIndex, 1);
     offset++;
   }
-}
-
-function updateHazardStatus(i, h) {
-  if (h.y >= 440) scheduleHazardDespawn(i, h);
-  else if (isColliding(h.getStr(), 32, 32) && mario.invincibility === -1) {
-    updateLives(-1);
-    scheduleHazardDespawn(i, h);
-  }
-}
-
-function updateHazards() {
-  hazards_despawn = [];
-  for (var i in hazards) {
-    var h = hazards[i];
-    updateHazardY(h);
-    updateHazardStatus(i, h);
-  }
-  performHazardsDespawn();  
 }
 
 function spawnHazard() {
@@ -107,25 +116,39 @@ function spawnHazard() {
   showElement(spawnH.getStr());
 }
 
-function Hazard(x, y) {
+// COIN
+
+function Coin(x, y) {
   this.x = x;
   this.y = y;
   this.vy = 3;
   this.getStr = function() {
-    return "hazard" + this.id;
+    return "coin" + this.id;
   };
 }
 
-// COIN
-
-function updateCoinSprite(c) {
-  c.frame = (c.frame+1)%8;
-  setImageURL(c.getStr(), "assets/coin"+c.frame+".gif");
+function updateCoins() {
+  coins_despawn = [];
+  for (var i in coins) {
+    var c = coins[i];
+    updateCoinY(c);
+    updateCoinStatus(i, c);
+  }
+  performCoinsDespawn();    
 }
 
 function updateCoinY(c) {
   c.y += c.vy;
   setPosition(c.getStr(),c.x,c.y);
+}
+
+function updateCoinStatus(i, c) {
+  if (c.y >= 440) scheduleCoinDespawn(i, c);
+  else if (isColliding(c.getStr(), 32, 32)) {
+    playSound("assets/coin.mp3", false);
+    updateScore(200);
+    scheduleCoinDespawn(i, c);
+  }
 }
 
 function scheduleCoinDespawn(i, c) {
@@ -138,30 +161,6 @@ function performCoinsDespawn() {
     var coinIndex = coins_despawn[i];
     coins.splice(coinIndex, 1);
   }
-}
-
-function updateCoinStatus(i, c) {
-  if (c.y >= 440) scheduleCoinDespawn(i, c);
-    
-  else if (isColliding(c.getStr(), 32, 32)) {
-    playSound("assets/coin.mp3", false);
-    updateScore(200);
-    scheduleCoinDespawn(i, c);
-  }
-}
-
-function updateCoins() {
-  coins_despawn = [];
-  for (var i in coins) {
-    var c = coins[i];
-    
-    updateCoinY(c);
-    updateCoinStatus(i, c);
-    
-    if (ticks % 7 === 0) updateCoinSprite(c);
-  }
-  
-  performCoinsDespawn();    
 }
 
 function spawnCoin() {
@@ -182,16 +181,6 @@ function spawnCoin() {
   spawnC.id = spawnId;
   coins.push(spawnC);
   showElement(spawnC.getStr());
-}
-
-function Coin(x, y) {
-  this.x = x;
-  this.y = y;
-  this.vy = 3;
-  this.frame = 0;
-  this.getStr = function() {
-    return "coin" + this.id;
-  };
 }
 
 // MARIO
