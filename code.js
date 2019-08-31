@@ -382,11 +382,11 @@ function tick() {
   if (ticks % 40 === 0) spawnCoin();
   updateCoins();
   
-  if (ticks % (80 - 10 * ~~(ticks / 1000)) === 0) {
+  if (ticks % (90 - 10 * ~~(ticks / 1000)) === 0) {
     var r = Math.random();
     if (r < 0.75) spawnHazard();
-    if (r < 0.1) spawnHazard();
-    if (r < 0.02) spawnHazard();
+    if (r < 0.15) spawnHazard();
+    if (r < 0.05) spawnHazard();
   }
   updateHazards();
   
