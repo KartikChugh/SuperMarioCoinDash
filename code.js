@@ -40,8 +40,8 @@ function updateScore(delta) {
   setText("score", formatScore(score));
 }
 
-function updateLives(delta) {
-  lives += delta;
+function subtractLife() {
+  lives -= 1;
   setText("lives", ("⨯ " + lives));
   if (lives === 0) endGame();
   else mario.invincibility = 10;
@@ -76,7 +76,7 @@ function updateHazardY(h) {
 function updateHazardStatus(i, h) {
   if (h.y >= 440) scheduleHazardDespawn(i, h);
   else if (isColliding(h.getStr(), 32, 32) && mario.invincibility === -1) {
-    updateLives(-1);
+    subtractLife();
     scheduleHazardDespawn(i, h);
   }
 }
