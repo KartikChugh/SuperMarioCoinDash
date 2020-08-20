@@ -394,7 +394,11 @@ function tick() {
   if (ticks % 40 === 0) spawnCoin();
   updateCoins();
   
-  if (ticks % (90 - 10 * ~~(ticks / 1000)) === 0) {
+  var spawnHazardTickRate = 90;
+  spawnHazardTickRate -= 15 * ~~(ticks / 1000);
+  spawnHazardTickRate = Math.max(spawnHazardTickRate, 25);
+  
+  if (ticks % spawnHazardTickRate === 0) {
     var r = Math.random();
     if (r < 0.75) spawnHazard();
     if (r < 0.15) spawnHazard();
