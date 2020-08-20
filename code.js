@@ -44,7 +44,10 @@ function subtractLife() {
   lives -= 1;
   setText("lives", ("⨯ " + lives));
   if (lives === 0) endGame();
-  else mario.invincibility = 10;
+  else {
+    mario.invincibility = 10;
+    playSound("assets/smw_pipe.mp3");
+  }
 }
 
 // HAZARD
@@ -145,7 +148,7 @@ function updateCoinY(c) {
 function updateCoinStatus(i, c) {
   if (c.y >= 440) scheduleCoinDespawn(i, c);
   else if (isColliding(c.getStr(), 32, 32)) {
-    playSound("assets/coin.mp3", false);
+    playSound("assets/smw_coin.mp3");
     updateScore(200);
     scheduleCoinDespawn(i, c);
   }
@@ -291,14 +294,22 @@ function cleanScreen() {
 function startGame() {
   cleanScreen();
   initializeVars();
-  playSound("assets/overworld.mp3", true);
+  
+  if (Math.random() < 0.5) {
+    playSound("assets/smw_overworld.mp3", true);
+  } else {
+    playSound("assets/smw_athletic.mp3", true);
+  }
+  
   setScreen("game");
   tick();
 }
 
 function endGame() {
-  stopSound("assets/overworld.mp3");
+  stopSound("assets/smw_overworld.mp3");
+  stopSound("assets/smw_athletic.mp3");
   playSound("assets/death.mp3");
+
   highScore = Math.max(score, highScore);
   setImageURL("mario","assets/deathA.png");
   mario.cstate = CSTATE.RIGID;
@@ -363,7 +374,8 @@ function incrementScoring() {
   var highScoringDelta = highScore/50;
   highScoring = Math.min(highScoring+highScoringDelta, highScore);
   setText("highScore", formatScore(highScoring));
-  playSound("assets/coin.mp3"); 
+  playSound("assets/smw_coin.mp3"); 
+
   setTimeout(function(){incrementScoring()}, MS_PER_TICK);
 }
 
@@ -404,6 +416,7 @@ onEvent("game", "keydown", function(event) {
   if (event.keyCode === KEY.SPACE && mario.vstate === VSTATE.REST) {
     mario.vy = -7;
     mario.vstate = VSTATE.JUMP;
+    playSound("assets/smw_jump.mp3");
   }
   
   // WALK
