@@ -45,7 +45,7 @@ function subtractLife() {
   setText("lives", ("⨯ " + lives));
   if (lives === 0) endGame();
   else {
-    mario.invincibility = 10;
+    mario.immunity = 10;
     playSound("assets/smw_pipe.mp3");
   }
 }
@@ -78,7 +78,7 @@ function updateHazardY(h) {
 
 function updateHazardStatus(i, h) {
   if (h.y >= 440) scheduleHazardDespawn(i, h);
-  else if (isColliding(h.getStr(), 32, 32) && mario.invincibility === -1) {
+  else if (isColliding(h.getStr(), 32, 32) && mario.immunity === -1) {
     subtractLife();
     scheduleHazardDespawn(i, h);
   }
@@ -219,17 +219,16 @@ function updateMarioX() {
 }
 
 function updateMarioVisibility() {
-  if (mario.invincibility === 0) {
+  if (mario.immunity === 0) {
     showElement("mario"); 
-    mario.invincibility--;
   }
-  if (mario.invincibility === -1) return;
-  if (mario.invincibility % 2 === 0) {
+  if (mario.immunity === -1) return;
+  if (mario.immunity % 2 === 0) {
     showElement("mario");
   } else {
     hideElement("mario");
   }
-  mario.invincibility--;
+  mario.immunity--;
 }
 
 function updateMarioSprite() {
@@ -264,7 +263,7 @@ function initializeVars() {
     vstate: VSTATE.REST,
     hstate: HSTATE.REST_RIGHT,
     cstate: CSTATE.FREE,
-    invincibility: -1,
+    immunity: -1,
   };
   coins = []; 
   hazards = [];
