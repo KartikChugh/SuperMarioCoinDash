@@ -9,6 +9,7 @@ var COIN_IDS = [0,1,2,3,4];
 var HAZARD_IDS = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
 
 var mario;
+var star;
 var coins, hazards, coins_despawn, hazards_despawn;
 var ticks, score, lives;
 var highScore = 0;
@@ -186,6 +187,43 @@ function spawnCoin() {
   showElement(spawnC.getStr());
 }
 
+// STAR
+
+function updateStar() {
+  updateStarX();
+  updateStarY();
+  setPosition("star", star.x, star.y);
+  updateStarStatus();
+}
+
+function updateStarX() {
+  star.x += star.vx;
+}
+
+function updateStarY() {
+  if (star.vy*star.vy > 4) star.ay *= -1;
+  star.vy += star.ay;
+  star.y += star.vy;
+}
+
+function updateStarStatus() {
+  if (star.x < -90) {
+    star.spawned = false;
+    hideElement("star");
+  }
+}
+
+function spawnStar() {
+  star = {
+    x: 300, y: 60,
+    vx: -1, vy: 0,
+    ay: 0.05,
+    spawned: true,
+  };
+  showElement("star");
+}
+
+
 // MARIO
 
 function updateMario() {
@@ -221,6 +259,7 @@ function updateMarioX() {
 function updateMarioVisibility() {
   if (mario.immunity === 0) {
     showElement("mario"); 
+    mario.immunity = -1;
   }
   if (mario.immunity === -1) return;
   if (mario.immunity % 2 === 0) {
@@ -264,6 +303,12 @@ function initializeVars() {
     hstate: HSTATE.REST_RIGHT,
     cstate: CSTATE.FREE,
     immunity: -1,
+  };
+  star = {
+    x: 0, y: 0,
+    vx: 0, vy: 0,
+    ay: 0,
+    spawned: false,
   };
   coins = []; 
   hazards = [];
@@ -404,6 +449,9 @@ function tick() {
     if (r < 0.05) spawnHazard();
   }
   updateHazards();
+  
+  if (ticks % 2500 === 0 && ticks > 0 && !star.spawned) spawnStar();
+  updateStar();
   
   if (ticks % 50 === 0) updateScore(5);
   
