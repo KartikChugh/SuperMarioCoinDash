@@ -79,9 +79,14 @@ function updateHazardY(h) {
 
 function updateHazardStatus(i, h) {
   if (h.y >= 440) scheduleHazardDespawn(i, h);
-  else if (isColliding(h.getStr(), 32, 32) && mario.immunity === -1) {
-    subtractLife();
+  else if (isColliding(h.getStr(), 32, 32)) {
     scheduleHazardDespawn(i, h);
+    if (mario.invincibility !== -1) {
+      playSound("assets/smw_stomp.mp3");
+      updateScore(100);
+    } else if (mario.immunity === -1) {
+      subtractLife();
+    }
   }
 }
 
@@ -210,17 +215,26 @@ function updateStarStatus() {
   if (star.x < -90) {
     star.spawned = false;
     hideElement("star");
+    return;
+  } 
+  
+  if (isColliding("star", 88, 170)&& mario.invincibility === -1) {
+    setImageURL("star", "assets/lakitu_nostar.png");
+    playSound("assets/smw_power-up.mp3");
+    startInvincibility();
   }
 }
 
 function spawnStar() {
   star = {
-    x: 300, y: 60,
+    x: 350, y: 60,
     vx: -1, vy: 0,
     ay: 0.05,
     spawned: true,
   };
+  setImageURL("star","assets/lakitu.png");
   showElement("star");
+  playSound("assets/smw_power-up_appears.mp3");
 }
 
 
@@ -231,6 +245,7 @@ function updateMario() {
   if (mario.cstate !== CSTATE.RIGID) updateMarioX();
   setPosition("mario",mario.x,mario.y);
   if (mario.cstate === CSTATE.RIGID) return;
+  updateMarioInvincibility();
   if (ticks % 10 === 0) updateMarioVisibility();
   if (ticks % 10 === 0) updateMarioSprite();
 }
@@ -256,6 +271,16 @@ function updateMarioX() {
   if (mario.x < -30) mario.x = 310;
 }
 
+function updateMarioInvincibility() {
+  if (mario.invincibility === 0) {
+    stopInvincibility();
+  }
+  if (mario.invincibility === -1) {
+    return;
+  }
+  mario.invincibility--;
+}
+
 function updateMarioVisibility() {
   if (mario.immunity === 0) {
     showElement("mario"); 
@@ -272,24 +297,29 @@ function updateMarioVisibility() {
 
 function updateMarioSprite() {
   
+  var img = null;
+  
   if (mario.hstate === HSTATE.REST_RIGHT) {
-    setImageURL("mario","assets/right.png");
+    img = "right";
   } else if (mario.hstate === HSTATE.REST_LEFT) {
-    setImageURL("mario","assets/left.png");
+    img = "left";
     
   } else if (mario.hstate === HSTATE.WALK_RIGHT) {
-    if (getImageURL("mario") === "assets/rightB.png" && mario.vstate === VSTATE.REST) {
-      setImageURL("mario","assets/right.png");
+    if (getImageURL("mario").includes("rightB") && mario.vstate === VSTATE.REST) {
+      img = "right";
     } else {
-      setImageURL("mario","assets/rightB.png");
+      img = "rightB";
     }
   } else if (mario.hstate === HSTATE.WALK_LEFT) {
-    if (getImageURL("mario") === "assets/leftB.png"  && mario.vstate === VSTATE.REST) {
-      setImageURL("mario","assets/left.png");
+    if (getImageURL("mario").includes("leftB")  && mario.vstate === VSTATE.REST) {
+      img = "left";
     } else {
-      setImageURL("mario","assets/leftB.png");
+      img = "leftB";
     }
   }
+  
+  var modifier = (mario.invincibility !== -1 && mario.invincibility % 30 < 20) ? "_luigi" : "";
+  setImageURL("mario", img + modifier + ".png");
 }
 
 // MAIN ENGINE
@@ -303,6 +333,7 @@ function initializeVars() {
     hstate: HSTATE.REST_RIGHT,
     cstate: CSTATE.FREE,
     immunity: -1,
+    invincibility: -1,
   };
   star = {
     x: 0, y: 0,
@@ -333,25 +364,21 @@ function cleanScreen() {
     var HAZARD_ID = HAZARD_IDS[j];
     hideElement("hazard" + HAZARD_ID);
   }
+  hideElement("star");
 }
 
 function startGame() {
   cleanScreen();
   initializeVars();
   
-  if (Math.random() < 0.5) {
-    playSound("assets/smw_overworld.mp3", true);
-  } else {
-    playSound("assets/smw_athletic.mp3", true);
-  }
+  startThemeMusic();
   
   setScreen("game");
   tick();
 }
 
 function endGame() {
-  stopSound("assets/smw_overworld.mp3");
-  stopSound("assets/smw_athletic.mp3");
+  stopThemeMusic();
   playSound("assets/death.mp3");
 
   highScore = Math.max(score, highScore);
@@ -455,6 +482,31 @@ function tick() {
   
   if (ticks % 50 === 0) updateScore(5);
   
+}
+
+function startThemeMusic() {
+  if (Math.random() < 0.5) {
+    playSound("assets/smw_overworld.mp3", true);
+  } else {
+    playSound("assets/smw_athletic.mp3", true);
+  }
+}
+
+function stopThemeMusic() {
+  stopSound("assets/smw_overworld.mp3");
+  stopSound("assets/smw_athletic.mp3");
+}
+
+function startInvincibility() {
+  mario.invincibility = 14*1000/MS_PER_TICK;
+  playSound("assets/smw_invincible.mp3");
+  stopThemeMusic();
+}
+
+function stopInvincibility() {
+  mario.invincibility = -1;
+  stopSound("assets/smw_invincible.mp3");
+  startThemeMusic();
 }
 
 // KEY
