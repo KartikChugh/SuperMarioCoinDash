@@ -219,7 +219,7 @@ function updateStarStatus() {
   } 
   
   if (isColliding("star", 88, 170)&& mario.invincibility === -1) {
-    setImageURL("star", "assets/lakitu_nostar.png");
+    setImageURL("star", "assets/lakitu_nostar.gif");
     playSound("assets/smw_power-up.mp3");
     startInvincibility();
   }
@@ -232,7 +232,7 @@ function spawnStar() {
     ay: 0.05,
     spawned: true,
   };
-  setImageURL("star","assets/lakitu.png");
+  setImageURL("star","assets/lakitu.gif");
   showElement("star");
   playSound("assets/smw_power-up_appears.mp3");
 }
