@@ -7,10 +7,12 @@ var HSTATE = {REST_RIGHT:0, REST_LEFT:1, WALK_RIGHT:2, WALK_LEFT:3};
 
 var COIN_IDS = [0,1,2,3,4];
 var HAZARD_IDS = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
+var SCORE_TOAST_IDS = [0,1,2,3,4];
 
 var mario;
 var star;
 var coins, hazards, coins_despawn, hazards_despawn;
+var scoreToasts, scoreToasts_despawn;
 var ticks, score, lives;
 var highScore = 0;
 
@@ -39,6 +41,11 @@ function formatScore(scoreNum) {
 function updateScore(delta) {
   score += delta;
   setText("score", formatScore(score));
+}
+
+function updateScoreWithToast(delta, x, y) {
+  updateScore(delta);
+  spawnScoreToast(x,y,delta);
 }
 
 function subtractLife() {
@@ -83,7 +90,7 @@ function updateHazardStatus(i, h) {
     scheduleHazardDespawn(i, h);
     if (mario.invincibility !== -1) {
       playSound("assets/smw_stomp.mp3");
-      updateScore(100);
+      updateScoreWithToast(100, h.x, h.y);
     } else if (mario.immunity === -1) {
       subtractLife();
     }
@@ -155,7 +162,7 @@ function updateCoinStatus(i, c) {
   if (c.y >= 440) scheduleCoinDespawn(i, c);
   else if (isColliding(c.getStr(), 32, 32)) {
     playSound("assets/smw_coin.mp3");
-    updateScore(200);
+    updateScoreWithToast(200, c.x, c.y);
     scheduleCoinDespawn(i, c);
   }
 }
@@ -235,6 +242,74 @@ function spawnStar() {
   setImageURL("star","assets/lakitu.gif");
   showElement("star");
   playSound("assets/smw_power-up_appears.mp3");
+}
+
+// SCORE TOAST
+
+function ScoreToast(x, y) {
+  this.x = x;
+  this.y = y;
+  this.vy = -0.2;
+  this.getStr = function() {
+    return "scoreToast" + this.id;
+  };
+  this.lifespan = 80;
+}
+
+function updateScoreToasts() {
+  scoreToasts_despawn = [];
+  for (var i in scoreToasts) {
+    var st = scoreToasts[i];
+    updateScoreToastY(st);
+    updateScoreToastStatus(i, st);
+  }
+  performScoreToastsDespawn();    
+}
+
+function updateScoreToastY(st) {
+  st.y += st.vy;
+  setPosition(st.getStr(),st.x,st.y);
+}
+
+function updateScoreToastStatus(i, st) {
+  if (st.lifespan === 0) {
+    scheduleScoreToastDespawn(i, st);
+    return;
+  }
+  st.lifespan--;
+}
+
+function scheduleScoreToastDespawn(i, st) {
+  scoreToasts_despawn.push(i);
+  hideElement(st.getStr());
+}
+
+function performScoreToastsDespawn() {
+  for (var i in scoreToasts_despawn) {
+    var scoreToastIndex = scoreToasts_despawn[i];
+    scoreToasts.splice(scoreToastIndex, 1);
+  }
+}
+
+function spawnScoreToast(x, y, score) {
+  var spawnSt = new ScoreToast(x, y);
+  var spawnId = 0;
+  for (var i in SCORE_TOAST_IDS) {
+    var SCORE_TOAST_ID = SCORE_TOAST_IDS[i];
+    var present = false;
+    for (var j in scoreToasts) {
+      var scoreToast = scoreToasts[j];
+      present = present || (scoreToast.id===SCORE_TOAST_ID);
+    }
+    if (present === false) {
+      spawnId = SCORE_TOAST_ID;
+      break;
+    }
+  }
+  spawnSt.id = spawnId;
+  scoreToasts.push(spawnSt);
+  setText(spawnSt.getStr(), "+"+score)
+  showElement(spawnSt.getStr());
 }
 
 
@@ -345,6 +420,7 @@ function initializeVars() {
   hazards = [];
   coins_despawn = [];
   hazards_despawn = [];
+  scoreToasts = [];
   ticks = 0;
   score = 0;
   lives = 3;
@@ -363,6 +439,10 @@ function cleanScreen() {
   for (var j in HAZARD_IDS) {
     var HAZARD_ID = HAZARD_IDS[j];
     hideElement("hazard" + HAZARD_ID);
+  }
+  for (var k in SCORE_TOAST_IDS) {
+    var SCORE_TOAST_ID = SCORE_TOAST_IDS[k];
+    hideElement("scoreToast" + SCORE_TOAST_ID);
   }
   hideElement("star");
 }
@@ -479,6 +559,8 @@ function tick() {
   
   if (ticks % 2500 === 0 && ticks > 0 && !star.spawned) spawnStar();
   updateStar();
+  
+  updateScoreToasts();
   
   if (ticks % 50 === 0) updateScore(5);
   
