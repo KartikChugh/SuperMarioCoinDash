@@ -1,6 +1,7 @@
 var MS_PER_TICK = 10;
 
-var KEY = {SPACE:32, RIGHT:39, LEFT:37};
+var KEY = {SPACE:32, RIGHT:39, LEFT:37, W:87, A:65, S:83, D:68};
+
 var CSTATE = {FREE:0, RIGID:1};
 var VSTATE = {REST:0, JUMP:1};
 var HSTATE = {REST_RIGHT:0, REST_LEFT:1, WALK_RIGHT:2, WALK_LEFT:3};
@@ -593,21 +594,33 @@ function stopInvincibility() {
 
 // KEY
 
+function isJump(key) {
+  return key === KEY.SPACE || key === KEY.W;
+}
+
+function isRight(key) {
+  return key === KEY.RIGHT || key === KEY.D;
+}
+
+function isLeft(key) {
+  return key === KEY.LEFT || key === KEY.A;
+}
+
 onEvent("game", "keydown", function(event) {
   
   if (mario.cstate === CSTATE.RIGID) return;
   
   // JUMP: only if at vertical rest
-  if (event.keyCode === KEY.SPACE && mario.vstate === VSTATE.REST) {
+  if (isJump(event.keyCode) && mario.vstate === VSTATE.REST) {
     mario.vy = -7;
     mario.vstate = VSTATE.JUMP;
     playSound("assets/smw_jump.mp3");
   }
   
   // WALK
-  if (event.keyCode === KEY.RIGHT) {
+  if (isRight(event.keyCode)) {
     mario.hstate = HSTATE.WALK_RIGHT;
-  } else if (event.keyCode === KEY.LEFT) {
+  } else if (isLeft(event.keyCode)) {
     mario.hstate = HSTATE.WALK_LEFT;
   } 
 
@@ -618,9 +631,9 @@ onEvent("game", "keyup", function(event){
   if (mario.cstate === CSTATE.RIGID) return;
   
   // STOP WALK
-  if (event.keyCode === KEY.RIGHT && mario.hstate === HSTATE.WALK_RIGHT) {
+  if (isRight(event.keyCode) && mario.hstate === HSTATE.WALK_RIGHT) {
     mario.hstate = HSTATE.REST_RIGHT;
-  } else if (event.keyCode === KEY.LEFT && mario.hstate === HSTATE.WALK_LEFT) {
+  } else if (isLeft(event.keyCode) && mario.hstate === HSTATE.WALK_LEFT) {
     mario.hstate = HSTATE.REST_LEFT;
   }
 });
