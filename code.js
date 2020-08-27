@@ -50,7 +50,7 @@ function updateScoreWithToast(delta, x, y) {
 
 function subtractLife() {
   lives -= 1;
-  setText("lives", ("⨯ " + lives));
+  setText("lives", ("⨯" + lives));
   if (lives === 0) endGame();
   else {
     mario.immunity = 10;
@@ -425,7 +425,7 @@ function initializeVars() {
   score = 0;
   lives = 3;
   setText("score", formatScore(score));
-  setText("lives", ("⨯ " + lives));
+  setText("lives", ("⨯" + lives));
   curtain = 1;
   scoring = 0; 
   highScoring = 0;
