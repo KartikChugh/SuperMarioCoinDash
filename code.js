@@ -558,7 +558,7 @@ function tick() {
   }
   updateHazards();
   
-  if (ticks % 2500 === 0 && ticks > 0 && !star.spawned) spawnStar();
+  if (ticks % 6000 === 0 && ticks > 0 && !star.spawned) spawnStar();
   updateStar();
   
   updateScoreToasts();
