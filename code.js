@@ -226,7 +226,15 @@ function updateStarX() {
 }
 
 function updateStarY() {
-  if (star.vy*star.vy > 4) star.ay *= -1;
+  // Oscillate Lakitu, except when star has been plucked & he's going up
+  if (star.vy*star.vy > 4) {
+    if (!(star.nostar && star.vy < 0)) {
+      star.ay *= -1;
+    } else {
+      // Decrease acceleration for slow lift off the screen
+      star.ay *= 0.2;
+    }
+  }
   star.vy += star.ay;
   star.y += star.vy;
 }
@@ -234,12 +242,15 @@ function updateStarY() {
 function updateStarStatus() {
   if (star.x < -90) {
     star.spawned = false;
+    star.vx = 0;
+    star.vy = 0;
     hideElement("star");
     return;
   } 
   
   if (isColliding("star", 88, 170)&& mario.invincibility === -1) {
     setImageURL("star", "assets/lakitu_nostar.gif");
+    star.nostar = true;
     playSound("assets/smw_power-up.mp3");
     startInvincibility();
   }
@@ -251,6 +262,7 @@ function spawnStar() {
     vx: -1, vy: 0,
     ay: 0.05,
     spawned: true,
+    nostar: false,
   };
   setImageURL("star","assets/lakitu.gif");
   showElement("star");
