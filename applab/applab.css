@@ -1445,6 +1445,14 @@ a.WireframeButtons_active, div.WireframeButtons_active {
   border-bottom-color: #000;
   border-width: 21px;
   margin-left: -21px; }
+
+.blocklyHelp .blocklyText {
+  text-anchor: middle;
+  dominant-baseline: central; }
+
+.blocklyUnusedFrame {
+  transition: opacity 2s;
+  opacity: 0.8; }
 #debugResizeBar {
   width: 100%;
   height: 13px;

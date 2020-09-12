@@ -10,11 +10,9 @@ var COIN_IDS = [0,1,2,3,4];
 var HAZARD_IDS = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
 var SCORE_TOAST_IDS = [0,1,2,3,4];
 
-var mario;
-var star;
-var coins, hazards, coins_despawn, hazards_despawn;
-var scoreToasts, scoreToasts_despawn;
-var ticks, score, lives;
+var mario, star, _1up;
+var coins, hazards, coins_despawn, hazards_despawn, scoreToasts, scoreToasts_despawn;
+var ticks, score, lives, hazardsDestroyed;
 var highScore = 0;
 
 var curtain;
@@ -39,6 +37,10 @@ function formatScore(scoreNum) {
   return ("0000000" + ~~scoreNum).slice(-7);
 }
 
+function formatLives(lives) {
+  return "⨯" + lives;
+}
+
 function updateScore(delta) {
   score += delta;
   setText("score", formatScore(score));
@@ -51,12 +53,18 @@ function updateScoreWithToast(delta, x, y) {
 
 function subtractLife() {
   lives -= 1;
-  setText("lives", ("⨯" + lives));
+  setText("lives", formatLives(lives));
   if (lives === 0) endGame();
   else {
     mario.immunity = 10;
     playSound("assets/smw_pipe.mp3");
   }
+}
+
+function addLife() {
+  lives += 1;
+  setText("lives", formatLives(lives));
+  playSound("assets/smw_1-up.mp3");
 }
 
 // HAZARD
@@ -90,8 +98,12 @@ function updateHazardStatus(i, h) {
   else if (isColliding(h.getStr(), 28, 28)) {
     scheduleHazardDespawn(i, h);
     if (mario.invincibility !== -1) {
+      hazardsDestroyed++;
       playSound("assets/smw_stomp.mp3");
-      updateScoreWithToast(100, h.x, h.y);
+      updateScoreWithToast(hazardsDestroyed * 10, h.x, h.y);
+      if (hazardsDestroyed === 30) {
+        spawn1up();
+      }
     } else if (mario.immunity === -1) {
       subtractLife();
     }
@@ -309,8 +321,46 @@ function spawnScoreToast(x, y, score) {
   }
   spawnSt.id = spawnId;
   scoreToasts.push(spawnSt);
-  setText(spawnSt.getStr(), "+"+score)
+  setText(spawnSt.getStr(), "+"+score);
   showElement(spawnSt.getStr());
+}
+
+// 1UP
+
+function update1up() {
+  update1upX();
+  setPosition("1up", _1up.x, _1up.y);
+  update1upStatus();
+}
+
+function update1upStatus() {
+  var hide = false;
+  if (_1up.x < 0) {
+    hide = true;
+  }
+  if (isColliding("1up", 28, 28)) {
+    addLife();
+    hide = true;
+  }
+  if (hide === true) {
+    _1up.vx = 0;
+    _1up.x = 400;
+    hideElement("1up");
+    return;
+  }
+}
+
+function update1upX() {
+  _1up.x += _1up.vx;
+}
+
+function spawn1up() {
+  _1up = {
+    x: 330, y: 415-28,
+    vx: -1,
+  };
+  showElement("1up");
+  playSound("assets/smw_message_block.mp3");
 }
 
 
@@ -417,6 +467,10 @@ function initializeVars() {
     ay: 0,
     spawned: false,
   };
+  _1up = {
+    x: 0, y: 0,
+    vx: 0
+  };
   coins = []; 
   hazards = [];
   coins_despawn = [];
@@ -425,8 +479,9 @@ function initializeVars() {
   ticks = 0;
   score = 0;
   lives = 3;
+  hazardsDestroyed = 0;
   setText("score", formatScore(score));
-  setText("lives", ("⨯" + lives));
+  setText("lives", formatLives(lives));
   curtain = 1;
   scoring = 0; 
   highScoring = 0;
@@ -446,6 +501,7 @@ function cleanScreen() {
     hideElement("scoreToast" + SCORE_TOAST_ID);
   }
   hideElement("star");
+  hideElement("1up");
 }
 
 function startGame() {
@@ -570,6 +626,8 @@ function tick() {
   if (ticks % 6000 === 0 && ticks > 0 && !star.spawned) spawnStar();
   updateStar();
   
+  update1up();
+  
   updateScoreToasts();
   
   if (ticks % 50 === 0) updateScore(5);
@@ -599,6 +657,7 @@ function stopInvincibility() {
   mario.invincibility = -1;
   stopSound("assets/smw_invincible.mp3");
   startThemeMusic();
+  hazardsDestroyed = 0;
 }
 
 // KEY
