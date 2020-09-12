@@ -23,7 +23,7 @@ var scoring, highScoring;
 // UTILITY
 
 function isColliding(elem, width, height) {
-  var rect1 = {x:mario.x, y:mario.y, width:32, height:32};
+  var rect1 = {x:mario.x, y:mario.y, width:30, height:30};
   var rect2 = {x:getXPosition(elem), y:getYPosition(elem), width:width, height:height};
   
   if (rect1.x < rect2.x + rect2.width &&
@@ -87,7 +87,7 @@ function updateHazardY(h) {
 
 function updateHazardStatus(i, h) {
   if (h.y >= 440) scheduleHazardDespawn(i, h);
-  else if (isColliding(h.getStr(), 32, 32)) {
+  else if (isColliding(h.getStr(), 28, 28)) {
     scheduleHazardDespawn(i, h);
     if (mario.invincibility !== -1) {
       playSound("assets/smw_stomp.mp3");
@@ -161,7 +161,7 @@ function updateCoinY(c) {
 
 function updateCoinStatus(i, c) {
   if (c.y >= 440) scheduleCoinDespawn(i, c);
-  else if (isColliding(c.getStr(), 32, 32)) {
+  else if (isColliding(c.getStr(), 22, 22)) {
     playSound("assets/smw_coin.mp3");
     updateScoreWithToast(200, c.x, c.y);
     scheduleCoinDespawn(i, c);
