@@ -1,3 +1,5 @@
+startHome();
+
 var MS_PER_TICK = 10;
 
 var KEY = {SPACE:32, RIGHT:39, LEFT:37, W:87, A:65, S:83, D:68};
@@ -467,6 +469,11 @@ function updateMarioSprite() {
 
 // MAIN ENGINE
 
+function startHome() {
+  setScreen("home");
+  playSound("assets/smw_title.mp3", true);
+}
+
 function initializeVars() {
   mario = {
     x: 25, y: 215,
@@ -522,6 +529,7 @@ function cleanScreen() {
 }
 
 function startGame() {
+  stopSound("assets/smw_title.mp3");
   cleanScreen();
   initializeVars();
   
@@ -613,6 +621,8 @@ function tick() {
     ticks++;
     tick();
   }, MS_PER_TICK);
+  
+  if (ticks < 500) stopSound("assets/smw_title.mp3"); // audio fix
   
   updateMario();
   
@@ -731,7 +741,7 @@ onEvent("home", "keydown", function(event) {
 
 onEvent("scoring", "keydown", function(event) {
   if (event.keyCode === KEY.SPACE) {
-    setScreen("home");
+    startHome();
   } 
 });
 
