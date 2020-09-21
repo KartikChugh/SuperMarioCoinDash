@@ -99,7 +99,12 @@ function updateHazardStatus(i, h) {
     scheduleHazardDespawn(i, h);
     if (mario.invincibility !== -1) {
       hazardsDestroyed++;
-      playSound("assets/smw_stomp.mp3");
+      if (Math.random() < 0.5) {
+        playSound("assets/smw_stomp.mp3");
+      } else {
+        playSound("assets/smw_kick.mp3");
+      }
+      
       updateScoreWithToast(hazardsDestroyed * 10, h.x, h.y);
       if (hazardsDestroyed === 30) {
         spawn1up();
