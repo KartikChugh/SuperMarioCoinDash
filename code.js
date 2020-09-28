@@ -255,7 +255,7 @@ function updateStarStatus() {
     return;
   } 
   
-  if (isColliding("star", 88, 170)&& mario.invincibility === -1) {
+  if (isColliding("star", 32, 170)&& mario.invincibility === -1) {
     setImageURL("star", "assets/lakitu_nostar.gif");
     star.nostar = true;
     playSound("assets/smw_power-up.mp3");
