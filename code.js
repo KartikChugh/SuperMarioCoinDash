@@ -407,10 +407,14 @@ function updateMarioY() {
 }
 
 function updateMarioX() {
+  var speed = 3;
+  if (mario.invincibility !== -1) {
+    speed *= 1.5;
+  }
   if (mario.hstate === HSTATE.WALK_RIGHT) {
-    mario.x += 3;
+    mario.x += speed;
   } else if (mario.hstate === HSTATE.WALK_LEFT) {
-    mario.x -= 3;
+    mario.x -= speed;
   }
   if (mario.x > 310) mario.x = -30;
   if (mario.x < -30) mario.x = 310;
@@ -707,6 +711,9 @@ onEvent("game", "keydown", function(event) {
   
   // JUMP: only if at vertical rest
   var power = -6;
+  if (mario.invincibility !== -1) {
+    power *= 1.2;
+  }
   if (isJump(event.keyCode) && mario.vstate === VSTATE.REST) {
     mario.vy = power;
     mario.vstate = VSTATE.JUMP;
