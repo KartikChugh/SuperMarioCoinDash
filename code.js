@@ -679,7 +679,7 @@ function stopThemeMusic() {
 }
 
 function startInvincibility() {
-  mario.invincibility = 14*1000/MS_PER_TICK;
+  mario.invincibility = 13*1000/MS_PER_TICK;
   playSound("assets/smw_invincible.mp3");
   stopThemeMusic();
 }
