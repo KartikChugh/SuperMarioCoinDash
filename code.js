@@ -648,15 +648,19 @@ function tick() {
   // Start at 120 ticks. Every 1000 ticks, decrement by 15.
   // Until you get to 30. Then the decrement is 3.
   // Until you get to 20. Then stop decrementing.
+  // TEMP: Stopped at 30 due to gameplay overhaul
   var spawnHazardTickRate = 120;
   spawnHazardTickRate -= 15 * ~~(ticks / 1000);
-  if (spawnHazardTickRate < 20) {
-    spawnHazardTickRate = 20;
-  } else if (spawnHazardTickRate < 30) {
-    var lowerBy = 30 - spawnHazardTickRate;
-    var newLower = lowerBy/5;
-    spawnHazardTickRate = 30 - newLower;
+  if (spawnHazardTickRate < 30) {
+    spawnHazardTickRate = 30;
   }
+  // if (spawnHazardTickRate < 20) {
+  //   spawnHazardTickRate = 20;
+  // } else if (spawnHazardTickRate < 30) {
+  //   var lowerBy = 30 - spawnHazardTickRate;
+  //   var newLower = lowerBy/5;
+  //   spawnHazardTickRate = 30 - newLower;
+  // }
   
   if (ticks % spawnHazardTickRate === 0) {
     var r = Math.random();
