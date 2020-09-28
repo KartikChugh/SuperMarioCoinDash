@@ -701,6 +701,10 @@ input[type="radio"] {
   font-size: 16px;
   color: #949ca2;
   margin-right: 10px; }
+  html[dir=rtl] #puzzleRatingButtons p {
+    float: right;
+    margin-right: 0;
+    margin-left: 10px; }
 
 #puzzleRatingButtons svg {
   pointer-events: none; }
@@ -1002,12 +1006,16 @@ html[dir="RTL"] .prompt-icon-cell {
 
 .modal-content .show-code .generated-code-container {
   margin: 25px 10px 25px -80px; }
+  html[dir=rtl] .modal-content .show-code .generated-code-container {
+    margin: 25px -80px 25px 10px; }
 
 .modal-content.no-modal-icon .show-code .generated-code-container {
   margin-left: 0px; }
 
 .generated-code-container {
   margin-top: 10px; }
+  html[dir=rtl] .generated-code-container .generatedCodeMessage {
+    text-align: right; }
   .generated-code-container .generatedCodeMessage p {
     font-size: 14px;
     line-height: inherit;
@@ -1112,6 +1120,8 @@ html[dir="RTL"] .prompt-icon-cell {
     float: left;
     border: #c6cacd;
     border-style: solid; }
+    html[dir=rtl] #sharing .feedback-image {
+      float: right; }
   #sharing div {
     margin: 10px 0; }
     #sharing div.sharing-content {
@@ -1119,6 +1129,11 @@ html[dir="RTL"] .prompt-icon-cell {
       margin-right: 25px; }
       #sharing div.sharing-content.no-image {
         margin-left: 0; }
+        html[dir=rtl] #sharing div.sharing-content.no-image {
+          margin-right: 0; }
+      html[dir=rtl] #sharing div.sharing-content {
+        margin-right: 195px;
+        margin-left: 25px; }
   #sharing label {
     margin-top: 15px;
     font-size: 16px; }
@@ -1129,6 +1144,11 @@ html[dir="RTL"] .prompt-icon-cell {
     background-color: transparent;
     text-decoration: none;
     color: white; }
+  html[dir=rtl] #sharing .social-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row-reverse;
+    justify-content: flex-end; }
   #sharing button {
     background-color: #7665a0;
     color: white;
