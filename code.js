@@ -421,6 +421,9 @@ function updateMarioX() {
 }
 
 function updateMarioInvincibility() {
+  if (mario.invincibility === 2*1000/MS_PER_TICK) {
+    startThemeMusic();
+  }
   if (mario.invincibility === 1*1000/MS_PER_TICK) {
     playSound("assets/smw_reserve_item_release.mp3");
   }
@@ -690,7 +693,6 @@ function startInvincibility() {
 function stopInvincibility() {
   mario.invincibility = -1;
   stopSound("assets/smw_invincible.mp3");
-  startThemeMusic();
   hazardsDestroyed = 0;
 }
 
