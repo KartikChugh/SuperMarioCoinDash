@@ -15,6 +15,7 @@ var SCORE_TOAST_IDS = [0,1,2,3,4];
 var mario, star, _1up;
 var coins, hazards, coins_despawn, hazards_despawn, scoreToasts, scoreToasts_despawn;
 var ticks, score, lives, hazardsDestroyed;
+var coinsCollectedStreak;
 var highScore = 0;
 
 var curtain;
@@ -179,10 +180,14 @@ function updateCoinY(c) {
 }
 
 function updateCoinStatus(i, c) {
-  if (c.y >= 440) scheduleCoinDespawn(i, c);
+  if (c.y >= 440) {
+    coinsCollectedStreak = 0;
+    scheduleCoinDespawn(i, c);
+  }
   else if (isColliding(c.getStr(), 22, 22)) {
     playSound("assets/smw_coin.mp3");
-    updateScoreWithToast(200, c.x, c.y);
+    coinsCollectedStreak++;
+    updateScoreWithToast(coinsCollectedStreak*10, c.x, c.y-20);
     scheduleCoinDespawn(i, c);
   }
 }
@@ -514,6 +519,7 @@ function initializeVars() {
   score = 0;
   lives = 3;
   hazardsDestroyed = 0;
+  coinsCollectedStreak = 0;
   setText("score", formatScore(score));
   setText("lives", formatLives(lives));
   curtain = 1;
