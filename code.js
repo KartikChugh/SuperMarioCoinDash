@@ -706,8 +706,9 @@ onEvent("game", "keydown", function(event) {
   if (mario.cstate === CSTATE.RIGID) return;
   
   // JUMP: only if at vertical rest
+  var power = -6;
   if (isJump(event.keyCode) && mario.vstate === VSTATE.REST) {
-    mario.vy = -7;
+    mario.vy = power;
     mario.vstate = VSTATE.JUMP;
     playSound("assets/smw_jump.mp3");
   }
